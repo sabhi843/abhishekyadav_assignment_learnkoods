@@ -6,21 +6,45 @@ import { useQuery } from "react-query";
 import { useSelector } from "react-redux";
 import { Bounce, toast } from "react-toastify";
 
+const fetchData = async (url) => {
+  const response = await axios.get(url);
+  return response.data;
+};
+
 const Jobs = () => {
   const [jobs, setJobs] = useState([]);
   const [nextPageUrl, setNextPageUrl] = useState();
   const [prevPageUrl, setPrevPageUrl] = useState();
   const sortBy = useSelector((state) => state.filters.sortBy);
+  console.log("sortby", sortBy);
   const keywords = useSelector((state) => state.keyword);
 
-  const url = "https://learnkoods-task.onrender.com/job_api/";
+  const originalUrl = "https://learnkoods-task.onrender.com/job_api/";
 
-  const fetchData = async (url) => {
-    const response = await axios.get(url);
-    return response.data;
+  // Function to generate URL based on sortBy value
+  const generateUrl = () => {
+    let url = originalUrl;
+
+    // Check if sortBy exists
+    if (sortBy && sortBy !== "default") {
+      url += `?date=${sortBy}`;
+    }
+
+    // Check if keywords exist
+    if (keywords) {
+      url +=
+        sortBy && sortBy !== "default"
+          ? `&search=${keywords}`
+          : `?search=${keywords}`;
+    }
+
+    return url;
   };
+
+  const url = generateUrl();
+
   const { isLoading, isError, data, error } = useQuery(
-    ["data"],
+    ["data", sortBy, keywords],
     () => fetchData(url),
     {
       onSuccess: (res) => {
@@ -79,44 +103,40 @@ const Jobs = () => {
       });
   };
 
-  const sortJobs = () => {
-    let sortedJobs = [...jobs]; // Create a copy of the jobs array
+  // const sortJobs = () => {
+  //   let sortedJobs = [...jobs]; // Create a copy of the jobs array
 
-    // Apply sorting based on the selected sorting option
-    if (sortBy === "newest") {
-      sortedJobs.sort((a, b) => new Date(b.created) - new Date(a.created));
-    } else if (sortBy === "oldest") {
-      sortedJobs.sort((a, b) => new Date(a.created) - new Date(b.created));
-    }
+  //   // Apply sorting based on the selected sorting option
+  //   if (sortBy === "newest") {
+  //     sortedJobs.sort((a, b) => new Date(b.created) - new Date(a.created));
+  //   } else if (sortBy === "oldest") {
+  //     sortedJobs.sort((a, b) => new Date(a.created) - new Date(b.created));
+  //   }
 
-    // Apply filtering based on keywords
-    if (typeof keywords === "string" && keywords.length > 0) {
-      // Split keywords string by comma and trim whitespace
-      const keywordArray = keywords.split(",").map((keyword) => keyword.trim());
+  //   // Apply filtering based on keywords
+  //   if (typeof keywords === "string" && keywords.length > 0) {
+  //     // Split keywords string by comma and trim whitespace
+  //     const keywordArray = keywords.split(",").map((keyword) => keyword.trim());
 
-      sortedJobs = sortedJobs.filter((job) => {
-        // Check if any value in the job object contains any of the keywords
-        return Object.values(job).some((value) => {
-          if (typeof value === "string") {
-            return keywordArray.some((keyword) =>
-              value.toLowerCase().includes(keyword.toLowerCase())
-            );
-          }
-          return false; // If value is not a string, skip it
-        });
-      });
-    }
+  //     sortedJobs = sortedJobs.filter((job) => {
+  //       // Check if any value in the job object contains any of the keywords
+  //       return Object.values(job).some((value) => {
+  //         if (typeof value === "string") {
+  //           return keywordArray.some((keyword) =>
+  //             value.toLowerCase().includes(keyword.toLowerCase())
+  //           );
+  //         }
+  //         return false; // If value is not a string, skip it
+  //       });
+  //     });
+  //   }
 
-    return sortedJobs;
-  };
-
-  const sortedJobs = sortJobs();
-  console.log("keywords type of", keywords);
-  console.log("sorted final", sortedJobs);
+  //   return sortedJobs;
+  // };
 
   return (
     <div>
-      {sortedJobs.map((job, index) => (
+      {jobs.map((job, index) => (
         <div key={index} className="flex p-12 border rounded-lg mb-12">
           <div className="p-4">
             <Image
