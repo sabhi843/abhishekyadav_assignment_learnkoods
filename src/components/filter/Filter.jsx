@@ -2,7 +2,7 @@
 
 import { addKeyword } from "@/reduxstore/store";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 
 const Filter = () => {
@@ -28,13 +28,18 @@ const Filter = () => {
   const dispatch = useDispatch();
 
   const handleInputChange = (event) => {
-    const inputValue = event.target.value.trim(); // Trim the input value to remove leading and trailing whitespaces
-    setKeyword(inputValue); // Update the keyword state with the trimmed input value
-
-    if (inputValue !== "") {
-      dispatch(addKeyword(inputValue)); // Dispatch the addKeyword action with the trimmed input value
-    }
+    setKeyword(event.target.value);
   };
+
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      if (keyword.trim() !== "") {
+        dispatch(addKeyword(keyword));
+      }
+    }, 1000);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [keyword, dispatch]);
 
   const handleAddKeyword = () => {
     if (keyword.trim() !== "") {
