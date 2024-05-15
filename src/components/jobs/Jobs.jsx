@@ -16,7 +16,7 @@ const Jobs = () => {
   const [nextPageUrl, setNextPageUrl] = useState();
   const [prevPageUrl, setPrevPageUrl] = useState();
   const sortBy = useSelector((state) => state.filters.sortBy);
-  console.log("sortby", sortBy);
+  // console.log("sortby", sortBy);
   const keywords = useSelector((state) => state.keyword);
 
   const originalUrl = "https://learnkoods-task.onrender.com/job_api/";

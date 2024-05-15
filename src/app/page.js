@@ -62,7 +62,7 @@ export default function Home() {
             </select>
           </div>
         </div>
-        <div className="flex mt-12 mx-32 space-x-8 ">
+        <div className="w-full border flex mt-12  space-x-8 ">
           <div className="lg:w-2/6 flex justify-start   ">
             <div className="hidden lg:flex border w-full  rounded-lg">
               <Filter />

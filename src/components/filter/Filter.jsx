@@ -28,7 +28,12 @@ const Filter = () => {
   const dispatch = useDispatch();
 
   const handleInputChange = (event) => {
-    setKeyword(event.target.value);
+    const inputValue = event.target.value.trim(); // Trim the input value to remove leading and trailing whitespaces
+    setKeyword(inputValue); // Update the keyword state with the trimmed input value
+
+    if (inputValue !== "") {
+      dispatch(addKeyword(inputValue)); // Dispatch the addKeyword action with the trimmed input value
+    }
   };
 
   const handleAddKeyword = () => {
@@ -49,12 +54,12 @@ const Filter = () => {
             value={keyword}
             onChange={handleInputChange}
           />
-          <button
+          {/* <button
             onClick={handleAddKeyword}
             className="px-2 border rounded-lg ml-2"
           >
             Find
-          </button>
+          </button> */}
         </div>
       </div>
       <div className="flex flex-col px-8 py-4 ">
